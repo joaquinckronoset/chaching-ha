@@ -124,27 +124,27 @@ async def async_register_services(hass: HomeAssistant) -> None:
     async def svc_show_text(call: ServiceCall) -> None:
         await _post(
             hass, call, API_DISPLAY_TEXT,
-            "text", "x", "y", "color", "font", "align_right", "swap",
+            "text", "x", "y", "color", "font", "align_right", "swap", "hold_ms",
         )
 
     async def svc_show_number(call: ServiceCall) -> None:
         await _post(
             hass, call, API_DISPLAY_NUMBER,
-            "value", "x", "y", "color", "font", "align_right", "swap",
+            "value", "x", "y", "color", "font", "align_right", "swap", "hold_ms",
         )
 
     async def svc_show_panel(call: ServiceCall) -> None:
         await _post(
             hass, call, API_DISPLAY_PANEL,
             "label", "value", "percent", "values",
-            "color_line", "color_fill", "fill", "swap",
+            "color_line", "color_fill", "fill", "swap", "hold_ms",
         )
 
     async def svc_show_graph(call: ServiceCall) -> None:
         await _post(
             hass, call, API_DISPLAY_GRAPH,
             "values", "x", "y", "w", "h",
-            "color_line", "color_fill", "fill", "swap",
+            "color_line", "color_fill", "fill", "swap", "hold_ms",
         )
 
     async def svc_clear(call: ServiceCall) -> None:

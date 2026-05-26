@@ -1,118 +1,300 @@
-# ChaChing Panel — Example test dashboard
+# ChaChing Panel — Example test dashboard (v0.4.0)
+#
+# Requiere firmware v2.3.34+ (incluye hold_ms en endpoints draw para que
+# show_text/show_panel/show_graph sean visibles sin lock/unlock manual).
 #
 # Cómo usarlo:
 #   1. Settings → Dashboards → + Add Dashboard → "New dashboard from scratch".
-#      Title: "ChaChing Test"  Icon: mdi:led-strip-variant
+#      Title: "ChaChing Test"  Icon: mdi:led-strip-variant.
 #   2. Abre el dashboard recién creado → menú ⋮ (arriba derecha) → "Take control".
 #   3. Otra vez ⋮ → "Edit dashboard" → ⋮ → "Raw configuration editor".
 #   4. Borra lo que haya y pega TODO el contenido de este archivo.
 #   5. Guardar.
 #
-# Si tienes varios paneles configurados, edita `entry_id:` en cada acción para
-# apuntar al que quieras (visible en Settings → Devices → ChaChing Panel → ...).
+# Si tienes varios paneles configurados, edita `entry_id:` en cada acción
+# para apuntar al que quieras (Settings → Devices → ChaChing Panel → ...).
 
 title: ChaChing Test
 views:
-  - title: Controles
-    icon: mdi:gamepad-variant
+
+  # ============================================================
+  # Vista 1: TESTS RÁPIDOS — cada botón es 1-click y se ve en pantalla
+  # ============================================================
+  - title: Tests rápidos
+    icon: mdi:flash
     cards:
-      - type: vertical-stack
+      - type: markdown
+        content: |
+          ## 🚀 Tests rápidos
+          Cada botón muestra algo en pantalla durante **5 segundos**.
+          Tras eso el carrusel sigue normal.
+
+      - type: horizontal-stack
         cards:
-          - type: markdown
-            content: |
-              ## ChaChing Panel — Pruebas rápidas
-              Los botones llaman a los servicios `chaching_panel.*` con parámetros
-              típicos. Edita el YAML para probar otros.
+          - type: button
+            name: Texto
+            icon: mdi:format-text
+            tap_action:
+              action: call-service
+              service: chaching_panel.show_text
+              data:
+                text: HOLA HA
+                x: 4
+                y: 22
+                color: cyan
+                font: arial_20
+                hold_ms: 5000
+          - type: button
+            name: Número
+            icon: mdi:numeric
+            tap_action:
+              action: call-service
+              service: chaching_panel.show_number
+              data:
+                value: 42
+                x: 18
+                y: 20
+                color: yellow
+                font: arial_20
+                hold_ms: 5000
+          - type: button
+            name: Alerta
+            icon: mdi:alert
+            tap_action:
+              action: call-service
+              service: chaching_panel.show_text
+              data:
+                text: ALERT!
+                x: 4
+                y: 22
+                color: red
+                font: arial_20
+                hold_ms: 5000
 
-          - type: horizontal-stack
-            cards:
-              - type: button
-                name: Test
-                icon: mdi:message-text
-                tap_action:
-                  action: call-service
-                  service: chaching_panel.show_text
-                  data:
-                    text: HA OK
-                    x: 4
-                    y: 22
-                    color: cyan
-                    font: arial_20
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: Panel
+            icon: mdi:chart-box-outline
+            tap_action:
+              action: call-service
+              service: chaching_panel.show_panel
+              data:
+                label: HA
+                value: 23.5
+                percent: 78
+                color_line: green
+                color_fill: green
+                hold_ms: 5000
+          - type: button
+            name: Gráfica
+            icon: mdi:chart-line
+            tap_action:
+              action: call-service
+              service: chaching_panel.show_graph
+              data:
+                values: [10, 12, 15, 13, 18, 22, 19, 24, 28, 25, 30, 32, 28, 35, 38, 36]
+                x: 0
+                y: 8
+                w: 64
+                h: 24
+                color_line: cyan
+                color_fill: cyan
+                fill: true
+                hold_ms: 5000
+          - type: button
+            name: Limpiar
+            icon: mdi:eraser
+            tap_action:
+              action: call-service
+              service: chaching_panel.clear
 
-              - type: button
-                name: Lock
-                icon: mdi:lock
-                tap_action:
-                  action: call-service
-                  service: chaching_panel.lock
+  # ============================================================
+  # Vista 2: SONIDOS
+  # ============================================================
+  - title: Sonidos
+    icon: mdi:music
+    cards:
+      - type: markdown
+        content: |
+          ## 🔊 Sonidos del firmware
+          Los 4 sonidos preinstalados (no requieren lock).
 
-              - type: button
-                name: Unlock
-                icon: mdi:lock-open
-                tap_action:
-                  action: call-service
-                  service: chaching_panel.unlock
-
-              - type: button
-                name: Clear
-                icon: mdi:eraser
-                tap_action:
-                  action: call-service
-                  service: chaching_panel.clear
-
-          - type: horizontal-stack
-            cards:
-              - type: button
-                name: Order!
-                icon: mdi:cash-register
-                tap_action:
-                  action: call-service
-                  service: chaching_panel.play_sound
-                  data:
-                    name: order
-
-              - type: button
-                name: Coin
-                icon: mdi:hand-coin
-                tap_action:
-                  action: call-service
-                  service: chaching_panel.play_sound
-                  data:
-                    name: coin
-
-              - type: button
-                name: EpicWin
-                icon: mdi:trophy
-                tap_action:
-                  action: call-service
-                  service: chaching_panel.play_sound
-                  data:
-                    name: epicwin
-
-              - type: button
-                name: YouWin
-                icon: mdi:medal
-                tap_action:
-                  action: call-service
-                  service: chaching_panel.play_sound
-                  data:
-                    name: youwin
-
-      - type: entities
-        title: Demo flow — Doorbell-style alert
-        entities:
-          - type: section
-            label: Llama estos servicios en orden para ver el patrón típico
-        footer:
-          type: buttons
-          entities:
-            - entity: script.chaching_demo_alert
-              name: Run demo (requires script below)
-              icon: mdi:bell-ring
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: Order!
+            icon: mdi:cash-register
+            tap_action:
+              action: call-service
+              service: chaching_panel.play_sound
+              data: { name: order }
+          - type: button
+            name: Coin
+            icon: mdi:hand-coin
+            tap_action:
+              action: call-service
+              service: chaching_panel.play_sound
+              data: { name: coin }
+          - type: button
+            name: EpicWin
+            icon: mdi:trophy
+            tap_action:
+              action: call-service
+              service: chaching_panel.play_sound
+              data: { name: epicwin }
+          - type: button
+            name: YouWin
+            icon: mdi:medal
+            tap_action:
+              action: call-service
+              service: chaching_panel.play_sound
+              data: { name: youwin }
 
       - type: markdown
         content: |
-          ### Automation YAML de ejemplo
+          ### Volumen
+          Pulsa para cambiar el nivel global (0–100).
+
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: 25%
+            icon: mdi:volume-low
+            tap_action:
+              action: call-service
+              service: chaching_panel.set_volume
+              data: { value: 25 }
+          - type: button
+            name: 50%
+            icon: mdi:volume-medium
+            tap_action:
+              action: call-service
+              service: chaching_panel.set_volume
+              data: { value: 50 }
+          - type: button
+            name: 80%
+            icon: mdi:volume-high
+            tap_action:
+              action: call-service
+              service: chaching_panel.set_volume
+              data: { value: 80 }
+          - type: button
+            name: Mute
+            icon: mdi:volume-mute
+            tap_action:
+              action: call-service
+              service: chaching_panel.set_volume
+              data: { value: 0 }
+
+  # ============================================================
+  # Vista 3: CONTROL — lock/unlock/brillo/navegación
+  # ============================================================
+  - title: Control
+    icon: mdi:tune
+    cards:
+      - type: markdown
+        content: |
+          ## ⚙️ Control del display
+
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: Lock
+            icon: mdi:lock
+            tap_action:
+              action: call-service
+              service: chaching_panel.lock
+          - type: button
+            name: Unlock
+            icon: mdi:lock-open-variant
+            tap_action:
+              action: call-service
+              service: chaching_panel.unlock
+
+      - type: markdown
+        content: |
+          ### Brillo (0–100)
+
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: 10%
+            icon: mdi:brightness-2
+            tap_action:
+              action: call-service
+              service: chaching_panel.set_brightness
+              data: { value: 10 }
+          - type: button
+            name: 30%
+            icon: mdi:brightness-4
+            tap_action:
+              action: call-service
+              service: chaching_panel.set_brightness
+              data: { value: 30 }
+          - type: button
+            name: 60%
+            icon: mdi:brightness-6
+            tap_action:
+              action: call-service
+              service: chaching_panel.set_brightness
+              data: { value: 60 }
+          - type: button
+            name: 100%
+            icon: mdi:brightness-7
+            tap_action:
+              action: call-service
+              service: chaching_panel.set_brightness
+              data: { value: 100 }
+
+      - type: markdown
+        content: |
+          ### Saltar a un panel del timeline
+          Muestra el panel `index` (0-based) durante 8 segundos. Edita el
+          índice o duplica el botón para los demás.
+
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: Panel 0
+            icon: mdi:numeric-0-box-outline
+            tap_action:
+              action: call-service
+              service: chaching_panel.view_panel
+              data: { index: 0, hold_ms: 8000 }
+          - type: button
+            name: Panel 1
+            icon: mdi:numeric-1-box-outline
+            tap_action:
+              action: call-service
+              service: chaching_panel.view_panel
+              data: { index: 1, hold_ms: 8000 }
+          - type: button
+            name: Panel 2
+            icon: mdi:numeric-2-box-outline
+            tap_action:
+              action: call-service
+              service: chaching_panel.view_panel
+              data: { index: 2, hold_ms: 8000 }
+          - type: button
+            name: Panel 3
+            icon: mdi:numeric-3-box-outline
+            tap_action:
+              action: call-service
+              service: chaching_panel.view_panel
+              data: { index: 3, hold_ms: 8000 }
+
+  # ============================================================
+  # Vista 4: EJEMPLOS DE USO — automations YAML para copiar
+  # ============================================================
+  - title: Ejemplos
+    icon: mdi:lightbulb-on
+    cards:
+      - type: markdown
+        content: |
+          # 💡 Ejemplos de uso
+
+          ## 1. Timbre → notificación en pantalla + sonido
 
           ```yaml
           alias: "Aviso ChaChing - Timbre"
@@ -121,7 +303,6 @@ views:
               entity_id: binary_sensor.timbre
               to: "on"
           action:
-            - service: chaching_panel.lock
             - service: chaching_panel.show_text
               data:
                 text: TIMBRE
@@ -129,9 +310,77 @@ views:
                 y: 22
                 color: red
                 font: arial_20
+                hold_ms: 10000
             - service: chaching_panel.play_sound
+              data: { name: order }
+          ```
+
+          ## 2. Temperatura exterior cada 30 min
+
+          ```yaml
+          alias: "ChaChing - Temp exterior"
+          trigger:
+            - platform: time_pattern
+              minutes: "/30"
+          action:
+            - service: chaching_panel.show_panel
               data:
-                name: order
-            - delay: "00:00:10"
-            - service: chaching_panel.unlock
+                label: "Outside"
+                value: "{{ states('sensor.temperatura_exterior') | float }}"
+                color_line: cyan
+                color_fill: cyan
+                hold_ms: 8000
+          ```
+
+          ## 3. Alerta de venta (Shopify webhook ya integrado)
+
+          El panel ya muestra ventas automáticamente vía WebSocket.
+          Para forzar una "venta de prueba" desde HA:
+
+          ```yaml
+          alias: "Demo venta"
+          action:
+            - service: chaching_panel.show_text
+              data:
+                text: SALE 42 EUR
+                x: 0
+                y: 22
+                color: green
+                font: arial_16
+                hold_ms: 6000
+            - service: chaching_panel.play_sound
+              data: { name: epicwin }
+          ```
+
+          ## 4. Detección de movimiento → modo seguridad
+
+          ```yaml
+          alias: "ChaChing - Movimiento detectado"
+          trigger:
+            - platform: state
+              entity_id: binary_sensor.movimiento_salon
+              to: "on"
+          action:
+            - service: chaching_panel.show_text
+              data:
+                text: MOTION
+                color: orange
+                x: 8
+                y: 22
+                font: arial_18
+                hold_ms: 15000
+            - service: chaching_panel.set_brightness
+              data: { value: 100 }
+          ```
+
+          ## 5. Apagar el panel por la noche
+
+          ```yaml
+          alias: "ChaChing - Modo noche"
+          trigger:
+            - platform: time
+              at: "23:00:00"
+          action:
+            - service: chaching_panel.set_brightness
+              data: { value: 10 }
           ```

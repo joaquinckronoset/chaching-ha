@@ -19,45 +19,67 @@ _LOGGER = logging.getLogger(__name__)
 # Marker para no repetir la notificación de bienvenida en cada reload
 _WELCOME_FLAG = "welcome_notified"
 
-# Dashboard YAML que el usuario puede pegar en "Raw configuration editor"
+# Dashboard YAML que el usuario puede pegar en "Raw configuration editor".
+# Versión simple (sin el bloque de Ejemplos en markdown) para que la
+# notificación no sea kilométrica. El completo está en example_dashboard.yaml.
 _EXAMPLE_DASHBOARD_YAML = """\
 title: ChaChing Test
 views:
-  - title: Controles
-    icon: mdi:gamepad-variant
+  - title: Tests rapidos
+    icon: mdi:flash
     cards:
       - type: horizontal-stack
         cards:
           - type: button
-            name: Test
-            icon: mdi:message-text
+            name: Texto
+            icon: mdi:format-text
             tap_action:
               action: call-service
               service: chaching_panel.show_text
+              data: { text: HOLA HA, x: 4, y: 22, color: cyan, font: arial_20, hold_ms: 5000 }
+          - type: button
+            name: Numero
+            icon: mdi:numeric
+            tap_action:
+              action: call-service
+              service: chaching_panel.show_number
+              data: { value: 42, x: 18, y: 20, color: yellow, font: arial_20, hold_ms: 5000 }
+          - type: button
+            name: Alerta
+            icon: mdi:alert
+            tap_action:
+              action: call-service
+              service: chaching_panel.show_text
+              data: { text: ALERT!, x: 4, y: 22, color: red, font: arial_20, hold_ms: 5000 }
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: Panel
+            icon: mdi:chart-box-outline
+            tap_action:
+              action: call-service
+              service: chaching_panel.show_panel
+              data: { label: HA, value: 23.5, percent: 78, color_line: green, color_fill: green, hold_ms: 5000 }
+          - type: button
+            name: Grafica
+            icon: mdi:chart-line
+            tap_action:
+              action: call-service
+              service: chaching_panel.show_graph
               data:
-                text: HA OK
-                x: 4
-                y: 22
-                color: cyan
-                font: arial_20
+                values: [10, 15, 13, 18, 22, 24, 28, 25, 30, 32, 35, 38]
+                color_line: cyan
+                color_fill: cyan
+                hold_ms: 5000
           - type: button
-            name: Lock
-            icon: mdi:lock
-            tap_action:
-              action: call-service
-              service: chaching_panel.lock
-          - type: button
-            name: Unlock
-            icon: mdi:lock-open
-            tap_action:
-              action: call-service
-              service: chaching_panel.unlock
-          - type: button
-            name: Clear
+            name: Limpiar
             icon: mdi:eraser
             tap_action:
               action: call-service
               service: chaching_panel.clear
+  - title: Sonidos
+    icon: mdi:music
+    cards:
       - type: horizontal-stack
         cards:
           - type: button
@@ -88,6 +110,42 @@ views:
               action: call-service
               service: chaching_panel.play_sound
               data: { name: youwin }
+  - title: Control
+    icon: mdi:tune
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: Lock
+            icon: mdi:lock
+            tap_action: { action: call-service, service: chaching_panel.lock }
+          - type: button
+            name: Unlock
+            icon: mdi:lock-open-variant
+            tap_action: { action: call-service, service: chaching_panel.unlock }
+      - type: horizontal-stack
+        cards:
+          - type: button
+            name: 10%
+            icon: mdi:brightness-2
+            tap_action:
+              action: call-service
+              service: chaching_panel.set_brightness
+              data: { value: 10 }
+          - type: button
+            name: 60%
+            icon: mdi:brightness-6
+            tap_action:
+              action: call-service
+              service: chaching_panel.set_brightness
+              data: { value: 60 }
+          - type: button
+            name: 100%
+            icon: mdi:brightness-7
+            tap_action:
+              action: call-service
+              service: chaching_panel.set_brightness
+              data: { value: 100 }
 """
 
 
@@ -145,14 +203,21 @@ async def _async_post_install_welcome(
     if entry.options.get(_WELCOME_FLAG):
         return
 
-    # Test visual instantáneo: mostrar "HA OK" durante unos segundos.
+    # Test visual instantáneo: mostrar "HA OK" durante 8 segundos.
+    # Usa hold_ms para auto-lock (firmware v2.3.34+). En firmwares más
+    # antiguos hold_ms se ignora y el carousel sobreescribe inmediatamente.
     try:
-        await api.post("/api/display/lock")
         await api.post(
             "/api/display/text",
-            {"text": "HA OK", "x": 4, "y": 22, "color": "cyan", "font": "arial_20"},
+            {
+                "text": "HA OK",
+                "x": 4,
+                "y": 22,
+                "color": "cyan",
+                "font": "arial_20",
+                "hold_ms": 8000,
+            },
         )
-        # No await del unlock: que el carousel lo recupere por timeout (~30s).
     except Exception as err:  # noqa: BLE001
         _LOGGER.debug("Welcome show_text failed: %s", err)
 

@@ -46,7 +46,9 @@ view_panel:
 
 show_text:
   name: Mostrar texto
-  description: Dibuja texto en el panel.
+  description: >
+    Dibuja texto en el panel. Usa hold_ms para que sea visible (sin él
+    el carrusel sobrescribe inmediatamente).
   fields:
     entry_id: *entry_field
     text:
@@ -102,6 +104,15 @@ show_text:
       default: true
       selector:
         boolean:
+    hold_ms:
+      name: Duración (ms)
+      description: >
+        Si > 0, el panel se queda mostrando esto durante ese tiempo (ms)
+        antes de que vuelva el carrusel. 5000 = 5 segundos. Si es 0, el
+        carrusel sobrescribe inmediatamente y no se ve nada.
+      default: 5000
+      selector:
+        number: { min: 0, max: 600000, mode: box, step: 100 }
 
 show_number:
   name: Mostrar número
