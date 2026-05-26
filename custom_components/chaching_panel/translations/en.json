@@ -1,0 +1,20 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect ChaChing panel",
+        "description": "Enter the local IP of the panel.",
+        "data": {
+          "host": "Host (IP)",
+          "name": "Name"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not connect to the panel."
+    },
+    "abort": {
+      "already_configured": "This panel is already configured."
+    }
+  }
+}

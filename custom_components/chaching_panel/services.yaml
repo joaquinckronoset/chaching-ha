@@ -1,0 +1,343 @@
+# Servicios expuestos por la integración ChaChing Panel.
+# `entry_id` es opcional: si solo hay un panel configurado, se usa ese.
+
+lock:
+  name: Pausar timeline
+  description: >
+    Bloquea el timeline del panel para que no repinte. Útil antes de
+    mostrar contenido propio desde HA.
+  fields:
+    entry_id:
+      name: Entry ID
+      description: ID de la config entry del panel (si hay varios).
+      required: false
+      selector:
+        config_entry:
+          integration: chaching_panel
+
+unlock:
+  name: Reanudar timeline
+  description: Reanuda el timeline del panel.
+  fields:
+    entry_id: &entry_field
+      name: Entry ID
+      description: ID de la config entry del panel.
+      required: false
+      selector:
+        config_entry:
+          integration: chaching_panel
+
+view_panel:
+  name: Saltar a un panel
+  description: >
+    Muestra inmediatamente el panel cuyo índice se indica en el timeline
+    configurado. Hace unlock implícito si estaba lockeado.
+  fields:
+    entry_id: *entry_field
+    index:
+      name: Índice del panel
+      description: Posición 0-based dentro del timeline configurado.
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 64
+          mode: box
+
+show_text:
+  name: Mostrar texto
+  description: Dibuja texto en el panel.
+  fields:
+    entry_id: *entry_field
+    text:
+      name: Texto
+      required: true
+      selector:
+        text:
+    x:
+      name: X
+      default: 0
+      selector:
+        number: { min: 0, max: 63, mode: box }
+    y:
+      name: Y
+      default: 16
+      selector:
+        number: { min: 0, max: 31, mode: box }
+    color:
+      name: Color
+      default: white
+      selector:
+        select:
+          options:
+            - white
+            - red
+            - green
+            - blue
+            - yellow
+            - cyan
+            - magenta
+            - orange
+            - pink
+    font:
+      name: Fuente
+      default: mono_12
+      selector:
+        select:
+          options:
+            - "4x6"
+            - "5x7"
+            - mono_12
+            - mono_18
+            - arial_16
+            - arial_18
+            - arial_20
+    align_right:
+      name: Alinear a la derecha
+      default: false
+      selector:
+        boolean:
+    swap:
+      name: Swap inmediato
+      default: true
+      selector:
+        boolean:
+
+show_number:
+  name: Mostrar número
+  description: Dibuja un número en el panel.
+  fields:
+    entry_id: *entry_field
+    value:
+      name: Valor
+      required: true
+      selector:
+        number:
+          mode: box
+          step: 0.01
+    x: { name: X, default: 0, selector: { number: { min: 0, max: 63, mode: box } } }
+    y: { name: Y, default: 16, selector: { number: { min: 0, max: 31, mode: box } } }
+    color:
+      name: Color
+      default: white
+      selector:
+        select:
+          options: [white, red, green, blue, yellow, cyan, magenta, orange, pink]
+    font:
+      name: Fuente
+      default: arial_18
+      selector:
+        select:
+          options: ["4x6", "5x7", mono_12, mono_18, arial_16, arial_18, arial_20]
+    align_right: { name: Alinear derecha, default: false, selector: { boolean: } }
+    swap: { name: Swap, default: true, selector: { boolean: } }
+
+show_panel:
+  name: Mostrar panel (label + valor + gráfica)
+  description: >
+    Panel estándar con label arriba y, opcionalmente, valor grande, porcentaje
+    o gráfica de barras/línea.
+  fields:
+    entry_id: *entry_field
+    label:
+      name: Etiqueta
+      required: true
+      selector: { text: }
+    value:
+      name: Valor numérico
+      required: false
+      selector: { number: { mode: box, step: 0.01 } }
+    percent:
+      name: Porcentaje (0-100)
+      required: false
+      selector: { number: { min: 0, max: 100, mode: box } }
+    values:
+      name: Serie de valores (gráfica)
+      description: Array de números. Si se indica, se dibuja gráfica.
+      required: false
+      selector: { object: }
+    color_line:
+      name: Color línea
+      default: green
+      selector:
+        select:
+          options: [white, red, green, blue, yellow, cyan, magenta, orange, pink]
+    color_fill:
+      name: Color relleno
+      default: green
+      selector:
+        select:
+          options: [white, red, green, blue, yellow, cyan, magenta, orange, pink]
+    fill: { name: Rellenar, default: true, selector: { boolean: } }
+    swap: { name: Swap, default: true, selector: { boolean: } }
+
+show_graph:
+  name: Mostrar gráfica
+  description: Dibuja únicamente una gráfica a partir de una serie de valores.
+  fields:
+    entry_id: *entry_field
+    values:
+      name: Valores
+      required: true
+      selector: { object: }
+    x: { name: X, default: 0, selector: { number: { min: 0, max: 63, mode: box } } }
+    y: { name: Y, default: 8, selector: { number: { min: 0, max: 31, mode: box } } }
+    w: { name: Ancho, default: 64, selector: { number: { min: 1, max: 64, mode: box } } }
+    h: { name: Alto, default: 24, selector: { number: { min: 1, max: 32, mode: box } } }
+    color_line:
+      name: Color línea
+      default: green
+      selector:
+        select:
+          options: [white, red, green, blue, yellow, cyan, magenta, orange, pink]
+    color_fill:
+      name: Color relleno
+      default: green
+      selector:
+        select:
+          options: [white, red, green, blue, yellow, cyan, magenta, orange, pink]
+    fill: { name: Rellenar, default: true, selector: { boolean: } }
+    swap: { name: Swap, default: true, selector: { boolean: } }
+
+clear:
+  name: Limpiar panel
+  description: Pinta toda la pantalla a negro.
+  fields:
+    entry_id: *entry_field
+    swap: { name: Swap, default: true, selector: { boolean: } }
+
+draw_pixel:
+  name: Pixel
+  fields:
+    entry_id: *entry_field
+    x: { name: X, required: true, selector: { number: { min: 0, max: 63, mode: box } } }
+    y: { name: Y, required: true, selector: { number: { min: 0, max: 31, mode: box } } }
+    color:
+      name: Color
+      default: white
+      selector:
+        select:
+          options: [white, red, green, blue, yellow, cyan, magenta, orange, pink]
+    swap: { name: Swap, default: true, selector: { boolean: } }
+
+draw_line:
+  name: Línea
+  fields:
+    entry_id: *entry_field
+    x0: { name: X0, required: true, selector: { number: { min: 0, max: 63, mode: box } } }
+    y0: { name: Y0, required: true, selector: { number: { min: 0, max: 31, mode: box } } }
+    x1: { name: X1, required: true, selector: { number: { min: 0, max: 63, mode: box } } }
+    y1: { name: Y1, required: true, selector: { number: { min: 0, max: 31, mode: box } } }
+    color:
+      name: Color
+      default: white
+      selector:
+        select:
+          options: [white, red, green, blue, yellow, cyan, magenta, orange, pink]
+    swap: { name: Swap, default: true, selector: { boolean: } }
+
+draw_rect:
+  name: Rectángulo
+  fields:
+    entry_id: *entry_field
+    x: { name: X, required: true, selector: { number: { min: 0, max: 63, mode: box } } }
+    y: { name: Y, required: true, selector: { number: { min: 0, max: 31, mode: box } } }
+    w: { name: Ancho, required: true, selector: { number: { min: 1, max: 64, mode: box } } }
+    h: { name: Alto, required: true, selector: { number: { min: 1, max: 32, mode: box } } }
+    color:
+      name: Color
+      default: white
+      selector:
+        select:
+          options: [white, red, green, blue, yellow, cyan, magenta, orange, pink]
+    fill: { name: Rellenar, default: false, selector: { boolean: } }
+    swap: { name: Swap, default: true, selector: { boolean: } }
+
+draw_circle:
+  name: Círculo
+  fields:
+    entry_id: *entry_field
+    cx: { name: Centro X, required: true, selector: { number: { min: 0, max: 63, mode: box } } }
+    cy: { name: Centro Y, required: true, selector: { number: { min: 0, max: 31, mode: box } } }
+    r: { name: Radio, required: true, selector: { number: { min: 1, max: 32, mode: box } } }
+    color:
+      name: Color
+      default: white
+      selector:
+        select:
+          options: [white, red, green, blue, yellow, cyan, magenta, orange, pink]
+    fill: { name: Rellenar, default: false, selector: { boolean: } }
+    swap: { name: Swap, default: true, selector: { boolean: } }
+
+draw_bitmap:
+  name: Bitmap RGB565
+  description: >
+    Dibuja un bitmap RGB565 a partir de bytes hex (longitud = w*h*2).
+  fields:
+    entry_id: *entry_field
+    x: { name: X, default: 0, selector: { number: { min: 0, max: 63, mode: box } } }
+    y: { name: Y, default: 0, selector: { number: { min: 0, max: 31, mode: box } } }
+    w: { name: Ancho, required: true, selector: { number: { min: 1, max: 64, mode: box } } }
+    h: { name: Alto, required: true, selector: { number: { min: 1, max: 32, mode: box } } }
+    data:
+      name: Datos hex
+      description: Bytes RGB565 en hex string ("aabb...").
+      required: true
+      selector: { text: { multiline: true } }
+    swap: { name: Swap, default: true, selector: { boolean: } }
+
+dissolve:
+  name: Dissolve front↔back
+  description: Mezcla progresiva del framebuffer front con el back.
+  fields:
+    entry_id: *entry_field
+    steps: { name: Pasos, default: 16, selector: { number: { min: 2, max: 64, mode: box } } }
+    ms_per_step: { name: ms por paso, default: 30, selector: { number: { min: 1, max: 500, mode: box } } }
+
+show_gif:
+  name: Mostrar GIF (URL)
+  description: Descarga y reproduce un GIF en el panel.
+  fields:
+    entry_id: *entry_field
+    url:
+      name: URL del GIF
+      required: true
+      selector: { text: }
+    loops: { name: Repeticiones, default: 1, selector: { number: { min: 0, max: 100, mode: box } } }
+
+set_brightness:
+  name: Ajustar brillo
+  fields:
+    entry_id: *entry_field
+    value:
+      name: Brillo (0-100)
+      required: true
+      selector: { number: { min: 0, max: 100, mode: slider } }
+
+play_sound:
+  name: Reproducir sonido
+  description: Reproduce un sonido del catálogo del firmware por nombre.
+  fields:
+    entry_id: *entry_field
+    name:
+      name: Nombre
+      required: true
+      selector: { text: }
+
+play_wav:
+  name: Reproducir WAV desde URL
+  fields:
+    entry_id: *entry_field
+    url:
+      name: URL del WAV
+      required: true
+      selector: { text: }
+
+set_volume:
+  name: Ajustar volumen
+  fields:
+    entry_id: *entry_field
+    value:
+      name: Volumen (0-100)
+      required: true
+      selector: { number: { min: 0, max: 100, mode: slider } }
