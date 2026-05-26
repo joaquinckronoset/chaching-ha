@@ -1,0 +1,137 @@
+# ChaChing Panel — Example test dashboard
+#
+# Cómo usarlo:
+#   1. Settings → Dashboards → + Add Dashboard → "New dashboard from scratch".
+#      Title: "ChaChing Test"  Icon: mdi:led-strip-variant
+#   2. Abre el dashboard recién creado → menú ⋮ (arriba derecha) → "Take control".
+#   3. Otra vez ⋮ → "Edit dashboard" → ⋮ → "Raw configuration editor".
+#   4. Borra lo que haya y pega TODO el contenido de este archivo.
+#   5. Guardar.
+#
+# Si tienes varios paneles configurados, edita `entry_id:` en cada acción para
+# apuntar al que quieras (visible en Settings → Devices → ChaChing Panel → ...).
+
+title: ChaChing Test
+views:
+  - title: Controles
+    icon: mdi:gamepad-variant
+    cards:
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              ## ChaChing Panel — Pruebas rápidas
+              Los botones llaman a los servicios `chaching_panel.*` con parámetros
+              típicos. Edita el YAML para probar otros.
+
+          - type: horizontal-stack
+            cards:
+              - type: button
+                name: Test
+                icon: mdi:message-text
+                tap_action:
+                  action: call-service
+                  service: chaching_panel.show_text
+                  data:
+                    text: HA OK
+                    x: 4
+                    y: 22
+                    color: cyan
+                    font: arial_20
+
+              - type: button
+                name: Lock
+                icon: mdi:lock
+                tap_action:
+                  action: call-service
+                  service: chaching_panel.lock
+
+              - type: button
+                name: Unlock
+                icon: mdi:lock-open
+                tap_action:
+                  action: call-service
+                  service: chaching_panel.unlock
+
+              - type: button
+                name: Clear
+                icon: mdi:eraser
+                tap_action:
+                  action: call-service
+                  service: chaching_panel.clear
+
+          - type: horizontal-stack
+            cards:
+              - type: button
+                name: Order!
+                icon: mdi:cash-register
+                tap_action:
+                  action: call-service
+                  service: chaching_panel.play_sound
+                  data:
+                    name: order
+
+              - type: button
+                name: Coin
+                icon: mdi:hand-coin
+                tap_action:
+                  action: call-service
+                  service: chaching_panel.play_sound
+                  data:
+                    name: coin
+
+              - type: button
+                name: EpicWin
+                icon: mdi:trophy
+                tap_action:
+                  action: call-service
+                  service: chaching_panel.play_sound
+                  data:
+                    name: epicwin
+
+              - type: button
+                name: YouWin
+                icon: mdi:medal
+                tap_action:
+                  action: call-service
+                  service: chaching_panel.play_sound
+                  data:
+                    name: youwin
+
+      - type: entities
+        title: Demo flow — Doorbell-style alert
+        entities:
+          - type: section
+            label: Llama estos servicios en orden para ver el patrón típico
+        footer:
+          type: buttons
+          entities:
+            - entity: script.chaching_demo_alert
+              name: Run demo (requires script below)
+              icon: mdi:bell-ring
+
+      - type: markdown
+        content: |
+          ### Automation YAML de ejemplo
+
+          ```yaml
+          alias: "Aviso ChaChing - Timbre"
+          trigger:
+            - platform: state
+              entity_id: binary_sensor.timbre
+              to: "on"
+          action:
+            - service: chaching_panel.lock
+            - service: chaching_panel.show_text
+              data:
+                text: TIMBRE
+                x: 4
+                y: 22
+                color: red
+                font: arial_20
+            - service: chaching_panel.play_sound
+              data:
+                name: order
+            - delay: "00:00:10"
+            - service: chaching_panel.unlock
+          ```
