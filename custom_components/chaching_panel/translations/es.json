@@ -8,13 +8,18 @@
           "host": "Host (IP)",
           "name": "Nombre"
         }
+      },
+      "discovery_confirm": {
+        "title": "Panel ChaChing detectado",
+        "description": "Se ha encontrado el panel **{name}** en {host}. ¿Añadirlo a Home Assistant?"
       }
     },
     "error": {
       "cannot_connect": "No se pudo conectar al panel."
     },
     "abort": {
-      "already_configured": "Este panel ya está configurado."
+      "already_configured": "Este panel ya está configurado.",
+      "cannot_connect": "No se pudo conectar al panel."
     }
   }
 }
